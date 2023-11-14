@@ -7,12 +7,12 @@ function HomePage() {
     const [title, setTitle] = useState("");
     const [text, setText] = useState("");
 
-    function handleCreatePost(event) {
+    function handleCreatePost(event: { preventDefault: () => void; }) {
         event.preventDefault();
 
         Axios.post("/post/create", {userId, username, title, text})
             .then(data => console.log(data))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.response));
     }
 
     const [posts, setPosts] = useState([]);
