@@ -4,6 +4,7 @@ import HomePage from "./page/HomePage.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./component/Navbar.tsx";
 import DashboardPage from "./page/DashboardPage.tsx";
+import CommunityPage from "./page/CommunityPage.tsx";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                 <Route path="/u/dashboard" element={<DashboardPage/>} />
                 <Route path="/u/signin" element={<SignInPage/>} />
                 <Route path="/u/signup" element={<SignUpPage/>} />
+                <Route path="/c/:community" element={<CommunityPage/>} />
             </Routes>
         </BrowserRouter>
     )
