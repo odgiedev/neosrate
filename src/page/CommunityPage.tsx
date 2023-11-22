@@ -14,6 +14,8 @@ function CommunityPage() {
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
 
+    const [communityExist, setCommunityExist] = useState(false);
+
     function handleCreatePost(event: { preventDefault: () => void; }) {
         event.preventDefault();
 
@@ -24,26 +26,42 @@ function CommunityPage() {
 
     useEffect(() => {
         Axios.get(`/post/get/all/community/${community}`)
-            .then(data => setPosts(data.data))
-            .catch(err => console.log(err.response.data))
+            .then(data => {
+                setPosts(data.data)
+                setCommunityExist(true);
+            })
+            .catch(err => {
+                console.log(err.response.data)
+                setCommunityExist(false);
+            })
     }, []);
 
     return (
         <>
             <div className="flex flex-col items-center w-1/2 min-h-screen mx-auto bg-slate-700">
-                <PostCreate handleCreatePost={handleCreatePost} setTitle={setTitle} setText={setText} community={community} />
+                {
+                    communityExist
+                    &&
+                    <PostCreate handleCreatePost={handleCreatePost} setTitle={setTitle} setText={setText} community={community} />
+                }
 
                 {
-                    posts.length > 0
+                    communityExist
                     ?
-                    posts.map(post => {
-                        return (
-                            <Post key={post.id} username={post.username} title={post.title} text={post.text}/>
-                        )
-                    })
+                        posts.length > 0
+                        ?
+                        posts.map(post => {
+                            return (
+                                <Post key={post.id} username={post.username} title={post.title} text={post.text}/>
+                            )
+                        })
+                        :
+                        <div className="mt-6">
+                            <h1>Nothing yet.</h1>
+                        </div>
                     :
-                    <div className="mt-6">
-                        <h1>Nothing yet.</h1>
+                    <div>
+                        <h1>COMMUNITY NOT FOUND</h1>
                     </div>
                 }
             </div>
