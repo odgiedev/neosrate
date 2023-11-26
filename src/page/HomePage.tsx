@@ -26,7 +26,7 @@ function HomePage() {
                 {
                     posts.map(post => {
                         return (
-                            <Post id={post.id} username={post.username} title={post.title} text={post.text}/>
+                            <Post id={post.id} community={post.community} username={post.username} title={post.title} text={post.text}/>
                         )
                     })
                 }
