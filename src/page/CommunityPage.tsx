@@ -19,13 +19,21 @@ function CommunityPage() {
     function handleCreatePost(event: { preventDefault: () => void; }) {
         event.preventDefault();
 
-        Axios.post("/post/create", {userId, community, username, title, text})
+        Axios.post("/post/create", {userId, community, username, title, text}, {
+            "headers": {
+                "Authorization" : localStorage.getItem("token")
+            }
+        })
             .then(data => console.log(data))
             .catch(err => console.log(err));
     }
 
     useEffect(() => {
-        Axios.get(`/post/get/all/community/${community}`)
+        Axios.get(`/post/get/all/community/${community}`, {
+            "headers": {
+                "Authorization" : localStorage.getItem("token")
+            }
+        })
             .then(data => {
                 setPosts(data.data)
                 setCommunityExist(true);

@@ -9,7 +9,11 @@ function CommunityCreateModal() {
     function handleCreateCommunity(event) {
         event.preventDefault();
 
-        Axios.post("/community/create", {name, description, creator})
+        Axios.post("/community/create", {name, description, creator}, {
+            "headers": {
+                "Authorization" : localStorage.getItem("token")
+            }
+        })
             .then(data => console.log(data))
             .catch(err => console.log(err.response.data))
     }

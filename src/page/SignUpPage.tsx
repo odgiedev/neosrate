@@ -9,9 +9,9 @@ function SignUpPage() {
     function handleSignUp(event) {
         event.preventDefault();
 
-        Axios.post("/user/create", {username, email, passwd: password})
+        Axios.post("/user/create", {username, email, passwd: password, role: "USERR"})
             .then(data => console.log(data))
-            .catch(err => console.log(err.response.data));
+            .catch(err => console.log(err.response));
     }
 
     return (

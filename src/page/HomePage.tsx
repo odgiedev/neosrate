@@ -13,7 +13,11 @@ function HomePage() {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        Axios.get("/post/get/all")
+        Axios.get("/post/get/all", {
+            headers: {
+                "Authorization": localStorage.getItem("token")
+            }
+        })
             .then(data => {
                 setPosts(data.data);
             })
@@ -26,7 +30,7 @@ function HomePage() {
                 {
                     posts.map(post => {
                         return (
-                            <Post id={post.id} community={post.community} username={post.username} title={post.title} text={post.text}/>
+                            <Post key={post.id} community={post.community} username={post.username} title={post.title} text={post.text}/>
                         )
                     })
                 }

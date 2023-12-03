@@ -10,10 +10,27 @@ function ProfilePage() {
     const [posts, setPosts] = useState([false]);
 
     useEffect(() => {
-        Axios.get(`/post/get/all/${username}`)
+        Axios.get(`/post/get/all/${username}`, {
+            "headers": {
+                "Authorization" : localStorage.getItem("token")
+            }
+        })
             .then(data => {
                 console.log(data);
                 setPosts(data.data);
+
+
+
+
+
+
+
+
+
+
+
+
+
                 setUserExist(true);   
             })
             .catch(err => {
