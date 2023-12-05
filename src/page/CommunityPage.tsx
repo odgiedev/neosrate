@@ -60,7 +60,7 @@ function CommunityPage() {
                         ?
                         posts.map(post => {
                             return (
-                                <Post key={post.id} username={post.username} title={post.title} text={post.text}/>
+                                <Post key={post.id} community={post.community} username={post.username} title={post.title} text={post.text} file={post.file_path} />
                             )
                         })
                         :

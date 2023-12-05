@@ -2,16 +2,16 @@ import {useState} from "react";
 import {Axios} from "../lib/axios.ts";
 
 function SignUpPage() {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("pdspoi");
+    const [email, setEmail] = useState("ipdas");
+    const [password, setPassword] = useState("dpasoid");
 
     function handleSignUp(event) {
         event.preventDefault();
 
         Axios.post("/user/create", {username, email, passwd: password, role: "USERR"})
             .then(data => console.log(data))
-            .catch(err => console.log(err.response));
+            .catch(err => console.log(err));
     }
 
     return (
@@ -20,7 +20,10 @@ function SignUpPage() {
                 <div className="w-3/5 py-10 pl-10">
                     <img src="/gonkillua2.png" alt="bg" className="w-11/12"/>
                 </div>
-                <form onSubmit={handleSignUp} className="flex flex-col w-2/5 items-center border-l-4 border-green-500 justify-center text-lg ">
+                <form onSubmit={handleSignUp} className="text-black flex flex-col w-2/5 items-center border-l-4 border-green-500 justify-center text-lg ">
+                    <h1>{username}</h1>
+                    <h1>{email}</h1>
+                    <h1>{password}</h1>
                     <h1 className="text-4xl mt-10 font-bold">Sign up</h1>
 
                     <input type="text" placeholder="Username" className="my-2 w-3/4 p-2 rounded"
