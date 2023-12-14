@@ -6,27 +6,56 @@ import PostEdit from "../component/PostEdit.tsx";
 
 function DashboardPage() {
     const username = localStorage.getItem("username");
+    const userId = localStorage.getItem("userId");
 
     const [posts, setPosts] = useState([]);
+    const [userProfile, setUserProfile] = useState([]);
+
+    const [bio, setBio] = useState("");
+
+    const [communityCreateModalEnable, setCommunityCreateModalEnable] = useState(false);
 
     useEffect(() => {
-        Axios.get(`/post/get/all/${username}`, {
+        Axios.get(`/userprofile/get/${userId}`, {
             "headers": {
-                "Authorization" : localStorage.getItem("token")
+                "Authorization": localStorage.getItem("token")
             }
         })
-            .then(data => setPosts(data.data))
+            .then(data => {
+                setUserProfile(data.data)
+                setBio(data.data.bio)
+            })
+            .catch(err => console.log(err))
+
+        Axios.get(`/post/get/all/user/${userId}`, {
+            "headers": {
+                "Authorization": localStorage.getItem("token")
+            }
+        })
+            .then(data => {
+                setPosts(data.data.posts)
+            })
             .catch(err => console.log(err))
     }, []);
 
     return (
         <>
-            {/*<CommunityCreateModal />*/}
+            <button className="bg-black" onClick={() => setCommunityCreateModalEnable(old => !old)}>Create community
+            </button>
+
+            {
+                communityCreateModalEnable
+                    ?
+                    <CommunityCreateModal/>
+                    :
+                    null
+            }
 
             <div className="flex flex-col items-center w-1/2 min-h-screen mx-auto bg-slate-700">
-                <img className="my-4 w-72 rounded-full" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e7ee321e-6f22-4e8b-8d29-2afb519141bb/dduwas1-b9f13643-dbd8-4e10-b19d-6b8d7e7b4e13.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U3ZWUzMjFlLTZmMjItNGU4Yi04ZDI5LTJhZmI1MTkxNDFiYlwvZGR1d2FzMS1iOWYxMzY0My1kYmQ4LTRlMTAtYjE5ZC02YjhkN2U3YjRlMTMuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.XSvZRk4yJjj0Em0HkwJcqPkKfvYxS4VMIpNVFIZeVfg" />
+                <img className="my-4 w-72 rounded-full" src={`/${userProfile.pfpPath !== null ? userProfile.pfpPath : "hxh.jpeg"}`}/>
                 <span className="my-4">{username}</span>
-                <p className="w-3/5 my-4 text-center">bio</p>
+                <input className="w-3/5 my-4 text-center bg-black" onChange={event => setBio(event.target.value)}
+                       value={bio}/>
 
                 {/*<select className="my-3 p-1 bg-slate-400 rounded">*/}
                 {/*    <option value="option1">Programming</option>*/}
@@ -39,7 +68,8 @@ function DashboardPage() {
                     &&
                     posts.map((post) => {
                         return (
-                            <PostEdit key={post.id} postId={post.id} username={post.username} title={post.title} text={post.text} file={post.filePath} />
+                            <PostEdit key={post.id} postId={post.id} username={post.username} title={post.title}
+                                      text={post.text} file={post.filePath}/>
                         )
                     })
                 }

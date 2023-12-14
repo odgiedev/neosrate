@@ -5,7 +5,7 @@ import Post from "../component/Post.tsx";
 import PostCreate from "../component/PostCreate.tsx";
 
 function CommunityPage() {
-    const { community } = useParams();
+    const {community} = useParams();
     const [posts, setPosts] = useState([]);
 
     const [title, setTitle] = useState("");
@@ -16,12 +16,14 @@ function CommunityPage() {
 
     const [communityExist, setCommunityExist] = useState(false);
 
+    const [likedPosts, setLikedPosts] = useState([]);
+
     function handleCreatePost(event: { preventDefault: () => void; }) {
         event.preventDefault();
 
         Axios.post("/post/create", {userId, community, username, title, text}, {
             "headers": {
-                "Authorization" : localStorage.getItem("token")
+                "Authorization": localStorage.getItem("token")
             }
         })
             .then(data => console.log(data))
@@ -31,11 +33,15 @@ function CommunityPage() {
     useEffect(() => {
         Axios.get(`/post/get/all/community/${community}`, {
             "headers": {
-                "Authorization" : localStorage.getItem("token")
+                "Authorization": localStorage.getItem("token")
             }
         })
             .then(data => {
-                setPosts(data.data)
+                const { posts, userLikes } = data.data;
+                setPosts(posts);
+                for (let i = 0; i < userLikes.length; i++) {
+                    setLikedPosts(old => [...old, [userLikes[i].postId, userLikes[i].likeType]])
+                }
                 setCommunityExist(true);
             })
             .catch(err => {
@@ -50,27 +56,33 @@ function CommunityPage() {
                 {
                     communityExist
                     &&
-                    <PostCreate handleCreatePost={handleCreatePost} setTitle={setTitle} setText={setText} community={community} />
+                    <PostCreate handleCreatePost={handleCreatePost} setTitle={setTitle} setText={setText}
+                                community={community}/>
                 }
 
                 {
                     communityExist
-                    ?
-                        posts.length > 0
                         ?
-                        posts.map(post => {
-                            return (
-                                <Post key={post.id} community={post.community} username={post.username} title={post.title} text={post.text} file={post.file_path} />
-                            )
-                        })
+                        posts.length > 0
+                            ?
+                            posts.map(post => {
+                                return (
+                                    <Post key={post.id} postId={post.id} community={post.community}
+                                          username={post.username} title={post.title} text={post.text}
+                                          file={post.filePath}
+                                          likeType={likedPosts.find(([postId]) => postId === post.id)?.[1]}
+                                          likeCount={post.likeCount} dislikeCount={post.dislikeCount}
+                                    />
+                                )
+                            })
+                            :
+                            <div className="mt-6">
+                                <h1>Nothing yet.</h1>
+                            </div>
                         :
-                        <div className="mt-6">
-                            <h1>Nothing yet.</h1>
+                        <div>
+                            <h1>COMMUNITY NOT FOUND</h1>
                         </div>
-                    :
-                    <div>
-                        <h1>COMMUNITY NOT FOUND</h1>
-                    </div>
                 }
             </div>
         </>
