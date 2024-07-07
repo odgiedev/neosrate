@@ -1,106 +1,158 @@
 import {useEffect, useState} from "react";
 import Post from "../component/Post";
 import {Axios} from "../lib/axios";
+import {useParams} from "react-router-dom";
+import {CaretDoubleDown, User} from "phosphor-react";
+import NothingYet from "../component/NothingYet.tsx";
+import Message from "../component/Message.tsx";
 
 function ProfilePage() {
-    const username = localStorage.getItem("username");
-    const userId = localStorage.getItem("userId");
+    // const usernameLogged = localStorage.getItem("username");
+    const userId = localStorage.getItem("userId") ? localStorage.getItem("userId") : -1;
 
-    const [posts, setPosts] = useState([]);
-    const [likedPosts, setLikedPosts] = useState([]);
+    const { username} = useParams();
+
+    const [showPosts, setShowPosts] = useState([]);
+
+    const [userProfile, setUserProfile] = useState([]);
+
+    const [userNotFound, setUserNotFound] = useState(false)
+
+    const [userLikes, setUserLikes] = useState([])
+
+    const [toShowComment, setToShowComment] = useState([])
+
+    const [communityOwner, setCommunityOwner] = useState([])
+
+    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+
+    const [trigger, setTrigger] = useState(1)
+
+    const [maxPerPage, setMaxPerPage] = useState(10);
+    const [haveMorePost, setHaveMorePost] = useState(false);
+
+    const [successMsg, setSuccessMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
+
+    function fnTrigger() {
+        setTrigger(old => old + 1);
+    }
 
     useEffect(() => {
-        Axios.get(`/post/get/all/user/${userId}`, {
-            "headers": {
-                "Authorization": localStorage.getItem("token")
+            const fetchData = async () => {
+                Axios.get(`/userprofile/get/${username}`)
+                    .then(data => {
+                        setUserProfile(data.data)
+                    })
+                    .catch(err => setErrorMsg(err.response.data || "An error occurred."))
+
+                Axios.get(`/community/get/owner/${username}`)
+                    .then(data => {
+                        setCommunityOwner(data.data.reverse())
+                    })
+                    .catch(err => setErrorMsg(err.response.data || "An error occurred."))
+
+                Axios.get(`/post/get/all/user/${maxPerPage}/${userId}/${username}`)
+                    .then(data => {
+                        const {posts, userLikes, comments, totalPosts} = data.data;
+                        setShowPosts(posts);
+                        setUserLikes(userLikes);
+                        setToShowComment(comments);
+
+                        setUserNotFound(false)
+
+                        if (totalPosts === showPosts.length) {
+                            setHaveMorePost(false)
+                        } else {
+                            setHaveMorePost(true)
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response.data.includes("UNF")) {
+                            setUserNotFound(true)
+                        }
+
+                        // if (err.response.data.includes("PNF")) {
+                        //     console.log("post doesnt exist")
+                        // }
+                    })
             }
-        })
-            .then(data => {
-                const { posts, userLikes } = data.data;
-                setPosts(posts);
-                for (let i = 0; i < userLikes.length; i++) {
-                    setLikedPosts(old => [...old, [userLikes[i].postId, userLikes[i].likeType]])
-                }
-            })
-            .catch(err => console.log(err))
-    }, []);
+            fetchData();
+    }, [trigger, maxPerPage]);
 
     return (
-        <>
-            {/*<CommunityCreateModal />*/}
-
-            <div className="flex flex-col items-center w-1/2 min-h-screen mx-auto bg-slate-700">
-                <img className="my-4 w-72 rounded-full"
-                     src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e7ee321e-6f22-4e8b-8d29-2afb519141bb/dduwas1-b9f13643-dbd8-4e10-b19d-6b8d7e7b4e13.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U3ZWUzMjFlLTZmMjItNGU4Yi04ZDI5LTJhZmI1MTkxNDFiYlwvZGR1d2FzMS1iOWYxMzY0My1kYmQ4LTRlMTAtYjE5ZC02YjhkN2U3YjRlMTMuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.XSvZRk4yJjj0Em0HkwJcqPkKfvYxS4VMIpNVFIZeVfg"/>
-                <span className="my-4">{username}</span>
-                <p className="w-3/5 my-4 text-center">bio</p>
+        <div className="bg-gradient-to-r from-slate-950 via-violet-900 to-slate-950">
+            <div className="flex flex-col pt-10 items-center sm:w-1/2 min-h-screen mx-auto">
+                <h1 className="font-bold text-xl flex items-center justify-center mb-8"> <User weight={"fill"} size={20} className="mr-2 sm:mr-0 xl:mr-2"/> <span className="inline sm:hidden xl:inline">PROFILE</span> </h1>
+                <Message successMsg={successMsg} setSuccessMsg={setSuccessMsg} errorMsg={errorMsg} setErrorMsg={setErrorMsg} />
 
                 {
-                    posts
-                    &&
-                    posts.map((post) => {
-                        return (
-                            <Post key={post.id} postId={post.id} community={post.community} username={post.username}
-                              title={post.title} text={post.text} file={post.filePath}
-                              likeType={likedPosts.find(([postId]) => postId === post.id)?.[1]}
-                              likeCount={post.likeCount} dislikeCount={post.dislikeCount}
-                            />
+                    !userNotFound
+                    ?
+                        <>
+                            <img className="my-4 w-72 h-72 object-cover rounded-full"
+                                 src={`${s3Url}/user${username}`}  alt="Profile pic"/>
+                            <span className="my-4">{username}</span>
+                            {
+                                userProfile.bio
+                                &&
+                                <pre className="whitespace-pre-wrap break-words w-3/5 my-4 text-center">{userProfile.bio}</pre>
+                            }
 
-                        )
-                    })
+                            <div id={"userData"} className="fixed right-0 top-0 mr-6 rounded-lg p-2 w-80 mt-20 hidden xl:flex flex-col justify-center items-center bg-slate-900">
+                                <span className="font-bold text-lg">Owner:</span>
+                                <div className={"flex flex-col overflow-y-scroll overflow-x-clip max-h-56 w-4/5 text-center mb-4"}>
+                                    {
+                                        communityOwner.map(community => {
+                                            return (
+                                                <a href={`/c/${community.name}`} key={community.id}>{community.name}</a>
+                                            )
+                                        })
+                                    }
+                                </div>
+
+                                <span className="font-bold text-lg">Created at:</span>
+                                <span className="mb-4">{userProfile.createdAt}</span>
+                            </div>
+                            {
+                                showPosts.length > 0
+                                ?
+                                showPosts.map((post) => {
+                                    return (
+                                    <Post
+                                            fnTrigger={fnTrigger}
+                                            key={post.id}
+                                            post={post}
+                                            likeType={userLikes.find((user) => user.postId === post.id)?.["likeType"]}
+                                            toShowComment={toShowComment}
+                                        />
+                                    )
+                                })
+                                :
+                                <NothingYet />
+                            }
+                        </>
+                    :
+                    <>
+                        <img className="my-4 w-72 h-72 object-cover rounded-full"
+                             src={`${s3Url}/default.png`} alt="Profile pic"/>
+                        <span className="my-4">{username}</span>
+
+                        <div className="text-3xl font-bold mt-16">
+                            <h1>USER NOT FOUND</h1>
+                        </div>
+                    </>
+                }
+                {
+                    haveMorePost &&
+                    <div className={"mb-6"}>
+                        <button onClick={() => setMaxPerPage(maxPerPage + 10)}><CaretDoubleDown size={32} /></button>
+                    </div>
                 }
             </div>
-        </>
+        </div>
     )
 }
 
-//     const { username } = useParams();
-
-//     const [userExist, setUserExist] = useState(false);
-//     const [posts, setPosts] = useState([false]);
-
-//     useEffect(() => {
-//         Axios.get(`/post/get/all/${username}`, {
-//             "headers": {
-//                 "Authorization" : localStorage.getItem("token")
-//             }
-//         })
-//             .then(data => {
-//                 console.log(data);
-//                 setPosts(data.data);
-
-
-//                 setUserExist(true);
-//             })
-//             .catch(err => {
-//                 console.log(err)
-//                 setUserExist(true);   
-//             })
-//     }, [])
-
-//     return (
-//         <>
-//             {
-//                 userExist
-//                 ?
-//                     posts.length > 0
-//                     ?
-//                     posts.map(post => {
-//                         return (
-//                             <Post key={post.id} username={post.username} title={post.title} text={post.text}/>
-//                         )
-//                     })
-//                     :
-//                     <div className="mt-6">
-//                         <h1>Nothing yet.</h1>
-//                     </div>
-//                 :
-//                 <div>
-//                     <h1>USER NOT FOUND</h1>
-//                 </div>
-//             }
-//         </>
-//     )
-// }
 
 export default ProfilePage;
