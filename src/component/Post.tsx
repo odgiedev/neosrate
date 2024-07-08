@@ -16,7 +16,7 @@ function Post({post, likeType, toShowComment, fnTrigger}) {
 
     const propCommunity = post.community;
 
-    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+    const s3Url = import.meta.env.VITE_S3_URL ?? ""
 
     const [maxComments, setMaxComments] = useState(2);
 

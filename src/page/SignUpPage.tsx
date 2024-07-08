@@ -25,7 +25,7 @@ function SignUpPage() {
         <div className="h-screen flex items-center justify-end">
             <div className="w-9/12 h-3/5 md:h-fit xl:w-3/4 mx-auto md:mr-24 xl:mr-5 flex border-4 border-green-700 rounded-lg bg-gradient-to-r from-violet-800 to-violet-950">
                 <div className="hidden xl:inline w-full xl:w-3/5 py-10 pl-10">
-                    <img src="https://neosrate.s3.sa-east-1.amazonaws.com/signup.png" alt="Sign Up" className="w-11/12" style={{transform: `scaleX(-1)`}}/>
+                    <img src={`${import.meta.env.VITE_S3_URL}/signup.png`} alt="Sign Up" className="w-11/12" style={{transform: `scaleX(-1)`}}/>
                 </div>
                 <form onSubmit={handleSignUp} className="flex flex-col w-full xl:w-2/5 items-center border-l-4 border-green-700 justify-center text-2meruemxl md:text-lg text-black">
                     <Message successMsg={successMsg} setSuccessMsg={setSuccessMsg} errorMsg={errorMsg} setErrorMsg={setErrorMsg} />

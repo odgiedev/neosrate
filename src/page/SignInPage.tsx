@@ -41,7 +41,7 @@ function SignInPage() {
         <div className="h-screen flex items-center justify-end">
             <div className="w-9/12 h-3/5 md:h-fit xl:w-3/4 mx-auto md:mr-24 xl:mr-5 flex border-4 border-green-700 rounded-lg bg-gradient-to-l from-violet-800 to-violet-950">
                 <div className="hidden xl:inline w-full xl:w-3/5 py-10 pl-10">
-                    <img src="https://neosrate.s3.sa-east-1.amazonaws.com/signin.png" alt="Sign In" className="w-11/12"
+                    <img src={`${import.meta.env.VITE_S3_URL}/signin.png`} alt="Sign In" className="w-11/12"
                      // style={{transform: `scaleX(-1)`}}
                     />
                 </div>

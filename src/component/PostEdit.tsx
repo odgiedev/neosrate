@@ -11,7 +11,7 @@ function PostEdit({post, fnTrigger}) {
     const [text, setText] = useState(post.text);
     const [file, setFile] = useState(post.filePath);
 
-    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+    const s3Url = import.meta.env.VITE_S3_URL ?? ""
 
     let extension;
 

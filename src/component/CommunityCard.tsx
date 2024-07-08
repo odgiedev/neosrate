@@ -1,5 +1,5 @@
 function CommunityCard({community}) {
-    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+    const s3Url = import.meta.env.VITE_S3_URL ?? ""
 
     return (
         <div className="rounded bg-gradient-to-b from-slate-800 to-black border-4 border-green-800 my-6 w-10/12">

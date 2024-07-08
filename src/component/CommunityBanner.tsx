@@ -58,7 +58,7 @@ function CommunityBanner({community, fnIsEditing}) {
                     <Message successMsg={successMsg} setSuccessMsg={setSuccessMsg} errorMsg={errorMsg} setErrorMsg={setErrorMsg} />
 
                     <div className="relative w-60 h-60 overflow-hidden rounded-full border-2 border-violet-800">
-                        <img className="absolute inset-0 h-full w-full object-cover" src={`https://neosrate.s3.sa-east-1.amazonaws.com/community${communityName}`} alt="Community Pic"/>
+                        <img className="absolute inset-0 h-full w-full object-cover" src={`${import.meta.env.VITE_S3_URL}/community${communityName}`} alt="Community Pic"/>
                         <input className="absolute inset-0 w-full h-full cursor-pointer opacity-0" type="file" onChange={e => handleSetCommunityPic(e.target.files)}/>
                     </div>
 

@@ -24,7 +24,7 @@ function ProfilePage() {
 
     const [communityOwner, setCommunityOwner] = useState([])
 
-    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+    const s3Url = import.meta.env.VITE_S3_URL ?? ""
 
     const [trigger, setTrigger] = useState(1)
 

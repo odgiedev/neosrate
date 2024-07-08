@@ -29,7 +29,7 @@ function DashboardPage() {
     const [maxPerPage, setMaxPerPage] = useState(10);
     const [haveMorePost, setHaveMorePost] = useState(false);
 
-    const s3Url = "https://neosrate.s3.sa-east-1.amazonaws.com"
+    const s3Url = import.meta.env.VITE_S3_URL ?? ""
 
     const [successMsg, setSuccessMsg] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
