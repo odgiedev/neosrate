@@ -1,27 +1,59 @@
-# React + TypeScript + Vite
+# Neosrate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Front-end da plataforma social Neosrate. SPA em React + Vite consumindo a API REST (Spring Boot). Usuários criam comunidades, publicam posts com mídia, comentam e curtem.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18 + Vite 4 + TypeScript
+- Redux Toolkit (estado global, auth)
+- React Router DOM 6
+- Axios
+- jwt-decode
+- Tailwind CSS 3
+- phosphor-react (ícones)
 
-## Expanding the ESLint configuration
+## Estrutura
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+```
+src/
+├── page/         Páginas roteadas (uma por rota)
+├── component/    Navbar, Footer, Post, CommunityCard, modais, etc.
+├── lib/          Configuração do axios
+├── assets/
+├── App.tsx       Rotas
+└── main.tsx      Bootstrap
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Setup
+
+Requer Docker e Docker Compose. A API Neosrate precisa estar acessível (default `http://localhost:8080/api`).
+
+```bash
+docker compose up --build
+```
+
+Build multi-stage (node → nginx) com fallback SPA. Disponível em `http://localhost:3000`.
+
+## Páginas
+
+| Rota | Descrição |
+|---|---|
+| `HomePage` | Feed de posts recentes |
+| `SignInPage` / `SignUpPage` | Autenticação |
+| `DashboardPage` | Visão do usuário |
+| `CommunityListPage` | Lista de comunidades |
+| `CommunityPage` / `CommunityDashboardPage` | Comunidade e gestão |
+| `JoinedPage` | Comunidades em que o usuário entrou |
+| `ProfilePage` | Perfil do usuário |
+| `SearchPage` | Busca de posts |
+| `NotFound` | 404 |
+
+Auth: token JWT decodificado com `jwt-decode`, guardado no store Redux; header `Authorization: Bearer` anexado nas requisições.
+
+## Decisões técnicas
+
+Contexto e trade-offs das principais escolhas (auth com Redux, decode do JWT, upload em duas etapas): **[devdiegofernandes.com/projects/neosrate](https://devdiegofernandes.com/projects/neosrate)**
+
+## Licença
+
+MIT
